@@ -9,6 +9,9 @@ on:
       - images/**.jpeg
       - images/**.png
 
+permissions:
+  contents: write
+
 jobs:
   convert-images:
     runs-on: ubuntu-latest
