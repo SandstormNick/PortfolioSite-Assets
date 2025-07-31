@@ -28,7 +28,7 @@ jobs:
 
       - name: Convert images to .webp and .avif
         run: |
-          find src/assets/images \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | while read img; do
+          find images \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | while read img; do
             cwebp -q 75 "$img" -o "${img%.*}.webp"
             avifenc --min 25 --max 35 "$img" "${img%.*}.avif"
           done
