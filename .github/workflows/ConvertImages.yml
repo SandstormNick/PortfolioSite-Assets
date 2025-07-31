@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   convert-images:
@@ -36,12 +37,10 @@ jobs:
             avifenc --min 25 --max 35 "$img" "${img%.*}.avif"
           done
 
-      - name: Commit and push changes
-        run: |
-          git add images/
-          if git diff --cached --quiet; then
-            echo "No new images to commit."
-          else
-            git commit -m "Auto-generate WebP and AVIF images"
-            git push
-          fi
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Auto-generate WebP and AVIF images"
+          title: "Auto-convert images to WebP/AVIF"
+          body: "Automatically generated optimized image formats"
+          branch: auto-convert-images
