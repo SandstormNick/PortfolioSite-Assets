@@ -1,0 +1,44 @@
+name: Convert Images to WebP and AVIF
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - images/**.jpg
+      - images/**.jpeg
+      - images/**.png
+
+jobs:
+  convert-images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Git user
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install image conversion tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webp libavif-bin
+
+      - name: Convert images to .webp and .avif
+        run: |
+          find src/assets/images \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | while read img; do
+            cwebp -q 75 "$img" -o "${img%.*}.webp"
+            avifenc --min 25 --max 35 "$img" "${img%.*}.avif"
+          done
+
+      - name: Commit and push changes
+        run: |
+          git add images/
+          if git diff --cached --quiet; then
+            echo "No new images to commit."
+          else
+            git commit -m "Auto-generate WebP and AVIF images"
+            git push
+          fi
